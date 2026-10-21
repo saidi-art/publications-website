@@ -122,48 +122,47 @@ def head(title, desc, canonical, og_image=None, og_type="website"):
 <meta name="twitter:description" content="{esc(desc)}">
 <meta name="twitter:image" content="{ogu}">
 <meta name="color-scheme" content="light">
-<!-- FAVICON SLOT: from the kubeAI cube mark, pending the vector logos from the design kit. -->
 <!-- ANALYTICS SLOT: privacy-friendly, cookieless analytics only (Plausible or Cloudflare Web Analytics). No third-party trackers. -->
-<!-- DESIGN-KIT SLOTS: /assets/css/tokens.css and /assets/css/web.css arrive with the round-1 kit web files. Until then these pages are structural. -->
-<link rel="stylesheet" href="/assets/css/tokens.css">
+<link rel="icon" type="image/png" href="/assets/logos/kubeai-logo-reverse.png">
+<link rel="apple-touch-icon" href="/assets/logos/kubeai-logo-reverse.png">
 <link rel="stylesheet" href="/assets/css/web.css">
 </head>"""
 
-def chrome(body_html, body_class="", title="", desc="", canonical="", og_image=None, og_type="website", campaign="publications-home"):
+def chrome(body_html, body_class="t-aba", title="", desc="", canonical="", og_image=None, og_type="website", campaign="publications-home", logo="/assets/logos/kubeai-logo-reverse.svg", logo_alt="kubeAI Publications", wrap="prose"):
     h = head(title, desc, canonical, og_image=og_image, og_type=og_type)
     nav = f"""
-<a class="skip-link" href="#main">Skip to content</a>
-<header class="site-header">
-  <p class="site-brand"><a href="/">{esc(BRAND)}</a></p>
-  <nav aria-label="Site">
-    <ul>
-      <li><a href="/smb-ai-accelerator/">SMB AI Accelerator</a></li>
-      <li><a href="/ai-business-advantage/">AI Business Advantage</a></li>
-      <li><a href="{utm(SITE + '/subscribe/', campaign)}">Subscribe</a></li>
-      <li><a href="/contact/">Contact</a></li>
-    </ul>
-  </nav>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-head">
+  <div class="container">
+    <a class="logo" href="/" aria-label="kubeAI Publications home"><img src="{logo}" alt="{esc(logo_alt)}"></a>
+    <nav aria-label="Site">
+      <ul>
+        <li><a href="/" {"aria-current='page'" if canonical == SITE + "/" else ""}>Magazines</a></li>
+        <li><a href="/smb-ai-accelerator/" {"aria-current='page'" if canonical == SITE + "/smb-ai-accelerator/" else ""}>SMB AI Accelerator</a></li>
+        <li><a href="/ai-business-advantage/" {"aria-current='page'" if canonical == SITE + "/ai-business-advantage/" else ""}>AI Business Advantage</a></li>
+        <li><a href="/contact/">Contact</a></li>
+        <li><a class="subscribe" href="{utm(SITE + '/subscribe/', campaign)}">Subscribe free</a></li>
+      </ul>
+    </nav>
+  </div>
 </header>"""
     footer = f"""
-<footer class="site-footer">
-  <p class="endorsement"><img src="/assets/logos/endorsement-reverse.png" width="170" height="19" alt="a kubeAI publication"></p>
-  <nav aria-label="Footer">
-    <ul>
-      <li><a href="/privacy/">Privacy</a></li>
-      <li><a href="/contact/">Contact</a></li>
-      <li><a href="{utm(SERVICES_URL, campaign)}">Work with kubeAI</a></li>
-      <li><a href="/feeds/smb-ai-accelerator.xml">SMB AI Accelerator feed</a></li>
-      <li><a href="/feeds/ai-business-advantage.xml">AI Business Advantage feed</a></li>
-    </ul>
-  </nav>
-  <p>© 2026 KubeAI. Both magazines are free, every month.</p>
+<footer class="site-foot">
+  <div class="container">
+    <img src="/assets/logos/kubeai-logo-reverse.svg" alt="kubeAI">
+    <p>kubeAI publishes two free monthly magazines. <a href="/privacy/">Privacy</a> &middot; <a href="/contact/">Contact</a> &middot; <a href="{utm(SERVICES_URL, campaign)}">kubeai.info</a></p>
+    <p>RSS: <a href="/feeds/smb-ai-accelerator.xml">SMB AI Accelerator</a> &middot; <a href="/feeds/ai-business-advantage.xml">AI Business Advantage</a></p>
+    <p>&copy; 2026 KubeAI. Both magazines are free, every month.</p>
+  </div>
 </footer>"""
+    if wrap == "prose":
+        inner = f'<main id="main">\n<div class="container">\n<div class="prose">\n{body_html}\n</div>\n</div>\n</main>'
+    else:
+        inner = body_html
     return f"""{h}
 <body class="{body_class}">
 {nav}
-<main id="main">
-{body_html}
-</main>
+{inner}
 {footer}
 </body>
 </html>"""
@@ -270,64 +269,93 @@ def issue_page(iss):
            if iss.get("pdf_published") else
            '<p class="pending">The PDF edition lands here once the issue is approved.</p>')
     sections = "\n".join(render_section(s, iss) for s in iss.get("sections", []))
-    placeholder_banner = ("""<p class="design-sample">Design sample · placeholder copy. The October issue copy is
-compiled 25 to 28 October and will replace this page from the production pipeline. Issue text is
-never edited on the site.</p>""" if iss.get("placeholder") else "")
-    hero_img = ""
+    endorse = "endorsement-reverse.svg" if slug == "smb-ai-accelerator" else "endorsement-aba.svg"
     if iss.get("hero", {}).get("src"):
         hi = iss["hero"]
-        hero_img = f'<img src="{hi["src"]}" alt="{esc(hi["alt"])}" width="1200" height="668">'
+        hero_fig = f'  <figure><img src="{hi["src"]}" alt="{esc(hi["alt"])}" width="1200" height="668" loading="lazy"></figure>'
+    else:
+        cover = "smb-cover.svg" if slug == "smb-ai-accelerator" else "aba-cover.svg"
+        hero_fig = f'  <figure><img src="/assets/img/{cover}" width="1800" height="1000" alt="Cover art for {esc(t["name"])}, {esc(period_name(iss))}" loading="lazy"></figure>'
+    has_sources = any(s.get("component") == "sources" for s in iss.get("sections", []))
+    toc = "\n".join(f'<li><a href="#s-{s["id"]}">{esc(s["heading"])}</a></li>' for s in iss.get("sections", []))
+    if has_sources:
+        toc += '\n<li><a href="#sources">Sources</a></li>'
+    cta_cards = "\n      ".join(
+        f'<a href="{utm(u, camp)}"><b>{esc(n)}</b><span>{esc(l)}</span><i>Learn more &rarr;</i></a>'
+        for n, u, l in PRODUCTS)
+    placeholder = ('\n    <p class="sample-note">Design sample &middot; placeholder copy. The October issue copy is '
+        'compiled 25 to 28 October and will replace this page from the production pipeline. Issue text is '
+        'never edited on the site.</p>') if iss.get("placeholder") else ""
     body = f"""
-<article class="issue" lang="en-GB">
-  <header class="issue-hero">
-    {placeholder_banner}
-    <p class="kicker">{esc(iss['kicker'])}</p>
-    <h1>{esc(iss['headline_main'])} <em>{esc(iss['headline_italic'])}</em></h1>
-    <p class="standfirst">{esc(iss['standfirst'])}</p>
-    {hero_img}
-  </header>
-  <div class="report-meta">
-    <p><span>Report date</span> {esc(iss['report_date'])}</p>
-    <p><span>Reporting period</span> {esc(iss['period'])}</p>
-    <p><span>Focus</span> {esc(iss.get('focus',''))}</p>
+<div class="hero">
+  <div class="container">
+    <div class="copy">
+      <p class="endorse"><img src="/assets/logos/{endorse}" alt="a kubeAI publication"></p>
+      <p class="kicker">{esc(iss['kicker'])}</p>
+      <h1>{esc(iss['headline_main'])} <em>{esc(iss['headline_italic'])}</em></h1>
+      <p class="standfirst">{esc(iss['standfirst'])}</p>
+    </div>
+{hero_fig}
   </div>
-  <nav class="toc" aria-label="In this issue">
-    <h2>In this issue</h2>
-    <!-- Contents render from the issue data. -->
+</div>
+<div class="report-meta">
+  <div class="container">
+    <dl>
+      <div><dt>Report date</dt><dd>{esc(iss['report_date'])}</dd></div>
+      <div><dt>Reporting period</dt><dd>{esc(iss['period'])}</dd></div>
+      <div><dt>Focus</dt><dd>{esc(iss.get('focus',''))}</dd></div>
+    </dl>
+  </div>
+</div>
+<div class="container layout">
+  <nav class="toc" aria-labelledby="toc-h">
+    <h2 id="toc-h">In this issue</h2>
+    <ol>
+      {toc}
+    </ol>
   </nav>
-  <div class="issue-body">
-    <!-- ISSUE CONTENT: rendered from data/issues/{slug}-{iss['volume']}.json by templates/build.py. Do not hand-edit. -->
+  <main id="main">
+    <article class="article">{placeholder}
 {sections}
-  </div>
+    </article>
+  </main>
+</div>
+<div class="container">
   {pdf}
-  <section class="issue-back" aria-labelledby="h-cta-{iss['volume']}">
-    <h2 id="h-cta-{iss['volume']}">Put this issue to work</h2>
-    {product_links(camp)}
-    <p><a class="cta" href="{utm(SITE + '/subscribe/', camp)}">Subscribe free · next issue, {esc(next_period(iss))}</a></p>
-  </section>
-</article>"""
-    return chrome(body, body_class=t["theme"], title=f"{t['name']} · {period_name(iss)}", desc=t["meta_desc"], canonical=url, og_image=img, og_type="article", campaign=camp)
+</div>
+<section class="cta-band" id="subscribe" aria-labelledby="cta-h">
+  <div class="container">
+    <h2 id="cta-h">Put this issue to work <em>this week.</em></h2>
+    <div class="cta-grid">
+      {cta_cards}
+    </div>
+  </div>
+</section>"""
+    return chrome(body, body_class=t["theme"], title=f"{t['name']} · {period_name(iss)}", desc=t["meta_desc"], canonical=url, og_image=img, og_type="article", campaign=camp, wrap=None)
 
 def render_section(s, iss):
     c = s.get("component"); sid = s["id"]
     if c == "article":
-        return f'<section aria-labelledby="s-{sid}">\n<h2 id="s-{sid}">{esc(s["heading"])}</h2>\n{s["body_html"]}\n</section>'
+        return f'<section aria-labelledby="s-{sid}">\n<div class="section-head"><h2 id="s-{sid}">{esc(s["heading"])}</h2></div>\n<div class="prose">\n{s["body_html"]}\n</div>\n</section>'
     if c == "recs":
         items = "".join(f"<li>{r['html']}</li>" for r in s["items"])
         cls = "recs bold-lead" if s.get("bold_lead") else "recs"
         return f'<section class="{cls}" aria-labelledby="s-{sid}">\n<h2 id="s-{sid}">{esc(s["heading"])}</h2>\n<ol>{items}</ol>\n</section>'
     if c == "blueprint":
         steps = "".join(f"<li>{st['html']}</li>" for st in s["steps"])
-        meta = "".join(f"<p>{esc(m)}</p>" for m in s.get("meta", []))
-        return f'<section class="blueprint" aria-labelledby="s-{sid}">\n<h2 id="s-{sid}">{esc(s["heading"])}</h2>\n<div class="meta">{meta}</div>\n<ol class="steps">{steps}</ol>\n</section>'
+        meta = "".join(f"<li>{esc(m)}</li>" for m in s.get("meta", []))
+        return (f'<section class="stack" aria-labelledby="s-{sid}">\n<div class="blueprints">\n<article class="blueprint" aria-labelledby="s-{sid}">\n<h3 id="s-{sid}">{esc(s["heading"])}</h3>\n<ul class="meta">{meta}</ul>\n<ol class="steps">{steps}</ol>\n</article>\n</div>\n</section>')
     if c == "angle":
-        return f'<section class="angle" aria-labelledby="s-{sid}">\n<h2 id="s-{sid}">{esc(s["heading"])}</h2>\n<p>{s["html"]}</p>\n</section>'
+        return f'<aside class="angle" aria-labelledby="s-{sid}">\n<p class="label" id="s-{sid}">{esc(s["heading"])}</p>\n<p>{s["html"]}</p>\n</aside>'
     if c == "warn":
         cls = "warn privacy" if s.get("variant") == "privacy" else "warn"
-        return f'<aside class="{cls}" role="note" aria-labelledby="s-{sid}">\n<h2 id="s-{sid}">{esc(s["heading"])}</h2>\n<p>{esc(s["text"])}</p>\n</aside>'
+        svg = ('<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 23 21H1z" fill="var(--accent)"/>'
+               '<path d="M12 9v5" stroke="var(--on-accent)" stroke-width="2.4" stroke-linecap="round"/>'
+               '<circle cx="12" cy="17.3" r="1.4" fill="var(--on-accent)"/></svg>')
+        return f'<div class="{cls}" role="note" aria-labelledby="s-{sid}">\n{svg}\n<p><strong id="s-{sid}">{esc(s["heading"])}</strong>{esc(s["text"])}</p>\n</div>'
     if c == "tools":
         cards = "".join(
-            f'<article class="tool"><p class="tool-cat">{esc(tl["category"])}</p><h3>{esc(tl["name"])}</h3><p>{esc(tl["what"])}</p><p class="price">{esc(tl["price"])}</p><p class="caveat">Caveat · {esc(tl["caveat"])}</p></article>'
+            f'<article class="tool"><p class="label">{esc(tl["category"])}</p><h3>{esc(tl["name"])}</h3><p>{esc(tl["what"])}</p><p class="price">{esc(tl["price"])}</p><p class="caveat">Caveat · {esc(tl["caveat"])}</p></article>'
             for tl in s["tools"])
         return f'<section aria-labelledby="s-{sid}">\n<h2 id="s-{sid}">{esc(s["heading"])}</h2>\n<div class="tools">{cards}</div>\n</section>'
     if c == "stats":

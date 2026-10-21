@@ -1,0 +1,24 @@
+/* kubeAI Publications · design tokens v1 · mirrors brand.json */
+:root{
+  --kube-navy:#0B1F3A; --kube-navy-2:#1E3A5F; --kube-teal:#00A8A8; --kube-teal-text:#007A7A;
+  --kube-grey-50:#F2F4F7; --kube-grey-200:#D9E1EA; --kube-slate:#4A5568;
+  --font-body:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --font-grotesk:'Space Grotesk','Inter',system-ui,sans-serif;
+  --font-serif:'Source Serif 4',Georgia,'Times New Roman',serif;
+}
+/* SMB AI Accelerator */
+.t-smb{
+  --ink:#0B1F3A; --paper:#FFFFFF; --paper-2:#FFF6EE; --brand:#0B1F3A;
+  --accent:#F26B21; --accent-text:#B4430E; --accent-tint:#FFE3CC; --on-accent:#0B1F3A;
+  --muted:#4A5568; --rule:#E6D9CC; --second:#00A8A8;
+  --font-display:var(--font-grotesk); --display-weight:700; --display-tracking:-0.02em;
+  --label-font:var(--font-grotesk); --label-tracking:.08em; --radius:14px;
+}
+/* AI Business Advantage */
+.t-aba{
+  --ink:#1B1840; --paper:#FBF8F1; --paper-2:#F3EEE2; --brand:#2E2A6B;
+  --accent:#C9A227; --accent-text:#7A5E10; --accent-tint:#EFE6C8; --on-accent:#1B1840;
+  --muted:#4A4766; --rule:#E2DCCB; --second:#B9B6E0;
+  --font-display:var(--font-serif); --display-weight:600; --display-tracking:-0.01em;
+  --label-font:var(--font-body); --label-tracking:.14em; --radius:0px;
+}
