@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://publications.kubeai.info/sitemap.xml

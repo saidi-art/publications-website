@@ -1,0 +1,33 @@
+{
+  "_comment": "Example issue.json schema for the production pipeline. Real files are named <slug>-<yyyy-mm>.json and contain no _comment key.",
+  "title": "smb-ai-accelerator",
+  "volume": "2026-11",
+  "report_date": "2026-11-28",
+  "period": "November 2026",
+  "kicker": "Monthly Intelligence Report · November 2026 · Free",
+  "focus": "One-line report focus",
+  "headline_main": "First clause of the headline, plain",
+  "headline_italic": "second clause, italic",
+  "standfirst": "One or two sentences under the headline.",
+  "hero": {"src": "/assets/img/<file>", "alt": "Alt text describing the illustration."},
+  "og_image": "/assets/img/og/<slug>-<yyyy-mm>.png",
+  "pdf_published": true,
+  "sections": [
+    {"id": "lead", "component": "article", "heading": "1 · Accessible AI advancements", "body_html": "<p>Prose supplied by the pipeline.</p>"},
+    {"id": "recs", "component": "recs", "heading": "Key recommendations", "bold_lead": false,
+     "items": [{"html": "Item text; wrap a bold lead phrase in <strong> when wanted."}]},
+    {"id": "bp1", "component": "blueprint", "heading": "Blueprint 1: name", "meta": ["Setup: about an hour", "Tools you own"],
+     "steps": [{"html": "Step text."}]},
+    {"id": "angle", "component": "angle", "heading": "Consultant angle", "html": "Angle text."},
+    {"id": "warn", "component": "warn", "variant": "privacy", "heading": "Privacy check", "text": "One or two sentences."},
+    {"id": "tools", "component": "tools", "heading": "Top 5 this month",
+     "tools": [{"category": "Inbox", "name": "Tool name", "what": "What it does.", "price": "USD — / month", "caveat": "One-line caveat."}]},
+    {"id": "stats", "component": "stats", "heading": "The signal in numbers",
+     "stats": [{"n": "31%", "label": "One-line label.", "source": "Publisher"}]},
+    {"id": "compare", "component": "compare", "heading": "The gap",
+     "a": {"n": "64%", "label": "Group A label"}, "b": {"n": "9%", "label": "Group B label"}, "source": "Publisher"},
+    {"id": "sources", "component": "sources", "heading": "Sources",
+     "groups": [{"heading": "1 · Section name", "start": 1,
+       "items": [{"html": "Publisher. <em>Title</em>. Day Month 2026. <a href=\"https://…\">publisher.example/…</a>"}]}]}
+  ]
+}
