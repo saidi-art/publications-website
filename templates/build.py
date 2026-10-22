@@ -99,6 +99,9 @@ def campaign_for(slug_or_none):
 
 # MailerLite Universal snippet: powers the embedded subscribe form on every page.
 # Plain string on purpose: the JS braces must not sit inside an f-string.
+# Keeps the MailerLite success message clear of the sticky header when the browser scrolls to it.
+ML_SCROLL_FIX = "<style>.ml-embedded,.subscribe-slot,#subscribe{scroll-margin-top:88px}</style>"
+
 ML_HEAD = """<script>
 (function(w,d,e,u,f,l,n){w[f]=w[f]||function(){(w[f].q=w[f].q||[]).push(arguments);},l=d.createElement(e),l.async=1,l.src=u,n=d.getElementsByTagName(e)[0],n.parentNode.insertBefore(l,n);})(window,document,'script','https://assets.mailerlite.com/js/universal.js','ml');ml('account','2732749');
 </script>
@@ -133,6 +136,7 @@ def head(title, desc, canonical, og_image=None, og_type="website"):
 <link rel="icon" type="image/png" href="/assets/logos/kubeai-logo-reverse.png">
 <link rel="apple-touch-icon" href="/assets/logos/kubeai-logo-reverse.png">
 <link rel="stylesheet" href="/assets/css/web.css">
+{ML_SCROLL_FIX}
 {ML_HEAD}
 </head>"""
 
@@ -429,6 +433,7 @@ def feeds():
                       f"<pubDate>{d.strftime('%a, %d %b %Y %H:%M:%S +0000')}</pubDate>"
                       f"<description>{esc(iss['headline_main'] + ' ' + iss['headline_italic'])}</description></item>")
         w(f"feeds/{slug}.xml", f"""<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="/feeds/feed.xsl" type="text/xsl"?>
 <rss version="2.0"><channel>
 <title>{esc(t['name'])}</title>
 <link>{SITE}/{slug}/</link>
