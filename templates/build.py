@@ -108,7 +108,7 @@ ML_HEAD = """<script>
 """
 
 def head(title, desc, canonical, og_image=None, og_type="website"):
-    ogi = og_image or "/assets/img/aba-hero.jpg"
+    ogi = og_image or "/assets/img/og-publications.jpg"
     ogu = SITE + ogi
     return f"""<!doctype html>
 <html lang="en-GB">
@@ -133,8 +133,9 @@ def head(title, desc, canonical, og_image=None, og_type="website"):
 <meta name="twitter:image" content="{ogu}">
 <meta name="color-scheme" content="light">
 <!-- ANALYTICS SLOT: privacy-friendly, cookieless analytics only (Plausible or Cloudflare Web Analytics). No third-party trackers. -->
-<link rel="icon" type="image/png" href="/assets/logos/kubeai-logo-reverse.png">
-<link rel="apple-touch-icon" href="/assets/logos/kubeai-logo-reverse.png">
+<link rel="icon" href="/assets/logos/favicon.svg" type="image/svg+xml">
+<link rel="icon" type="image/png" sizes="64x64" href="/assets/logos/favicon-64.png">
+<link rel="apple-touch-icon" href="/assets/logos/apple-touch-icon.png">
 <link rel="stylesheet" href="/assets/css/web.css">
 {ML_SCROLL_FIX}
 {ML_HEAD}
@@ -153,7 +154,7 @@ def chrome(body_html, body_class="t-aba", title="", desc="", canonical="", og_im
         <li><a href="/smb-ai-accelerator/" {"aria-current='page'" if canonical == SITE + "/smb-ai-accelerator/" else ""}>SMB AI Accelerator</a></li>
         <li><a href="/ai-business-advantage/" {"aria-current='page'" if canonical == SITE + "/ai-business-advantage/" else ""}>AI Business Advantage</a></li>
         <li><a href="/contact/">Contact</a></li>
-        <li><a class="subscribe" href="{utm(SITE + '/subscribe/', campaign)}">Subscribe free</a></li>
+        <li><a class="subscribe" href="{SITE}/subscribe/">Subscribe free</a></li>
       </ul>
     </nav>
   </div>
@@ -164,7 +165,7 @@ def chrome(body_html, body_class="t-aba", title="", desc="", canonical="", og_im
     <img src="/assets/logos/kubeai-logo-reverse.svg" alt="kubeAI">
     <p>kubeAI publishes two free monthly magazines. <a href="/privacy/">Privacy</a> &middot; <a href="/contact/">Contact</a> &middot; <a href="{utm(SERVICES_URL, campaign)}">kubeai.info</a></p>
     <p>RSS: <a href="/feeds/smb-ai-accelerator.xml">SMB AI Accelerator</a> &middot; <a href="/feeds/ai-business-advantage.xml">AI Business Advantage</a></p>
-    <p>&copy; 2026 KubeAI. Both magazines are free, every month.</p>
+    <p>&copy; 2026 kubeAI. Both magazines are free, every month.</p>
   </div>
 </footer>"""
     if wrap == "prose":
@@ -195,11 +196,49 @@ def next_period(iss):
     return datetime(y, m, 1).strftime("%B %Y")
 
 # --- subscribe slot (MailerLite embed replaces this block; double opt-in) ---
+MAG_PRETICK = """
+<script>
+(function () {
+  var params = new URLSearchParams(location.search);
+  var want = (params.get("mag") || "").toLowerCase();
+  var GROUPS = { smb: "202041563274020695", aba: "202041601412826941" };
+  function prep(form) {
+    if (form.dataset.kubeMag) return;
+    form.dataset.kubeMag = "1";
+    if (want && GROUPS[want]) {
+      var box = form.querySelector('input[type="checkbox"][value="' + GROUPS[want] + '"]');
+      if (box) box.checked = true;
+    }
+    form.addEventListener("submit", function (e) {
+      var any = form.querySelector('input[type="checkbox"][value]:checked');
+      if (any) { var n = document.getElementById("kube-mag-note"); if (n) n.hidden = true; return; }
+      var boxes = form.querySelectorAll('input[type="checkbox"][value]');
+      if (!boxes.length) return;
+      e.preventDefault();
+      var note = document.getElementById("kube-mag-note");
+      if (note) note.hidden = false;
+      boxes[0].focus();
+    });
+  }
+  function scan() {
+    document.querySelectorAll(".ml-embedded form").forEach(prep);
+    var note = document.getElementById("kube-mag-note");
+    if (note && !want) note.hidden = true;
+  }
+  if (document.body) {
+    new MutationObserver(scan).observe(document.body, { childList: true, subtree: true });
+  }
+  document.addEventListener("DOMContentLoaded", scan);
+})();
+</script>"""
+
 SUBSCRIBE_SLOT = """
 <div class="subscribe-slot">
   <!-- MailerLite embedded form: kubeAI Publications subscribe (double opt-in) -->
   <div class="ml-embedded" data-form="LF22mS"></div>
-</div>"""
+  <p id="kube-mag-note" class="form-note" hidden>Choose at least one magazine before you subscribe.</p>
+</div>
+""" + MAG_PRETICK
 
 PRIVACY_LINE = ('<p class="privacy-line">When you subscribe, we store your email address and the '
  "time you joined, nothing else. We use it only to send you the magazines you asked for. Each "
@@ -231,7 +270,7 @@ def home():
 <p>kubeAI publishes two free monthly magazines. SMB AI Accelerator is the plain, practical read
 for owners of small firms and their advisors. AI Business Advantage is the strategic read for AI
 consultants. Both arrive monthly, free, and every figure is sourced.</p>
-<p><a class="cta" href="{utm(SITE + '/subscribe/', 'publications-home')}">Subscribe free</a></p>
+<p><a class="cta" href="{SITE}/subscribe/">Subscribe free</a></p>
 {cards}
 <section aria-labelledby="h-products">
   <h2 id="h-products">From kubeAI</h2>
@@ -242,6 +281,7 @@ consultants. Both arrive monthly, free, and every figure is sourced.</p>
 def landing(slug):
     t = TITLES[slug]; iss = latest_issue(slug)
     camp = campaign_for(slug)
+    mag = "smb" if slug == "smb-ai-accelerator" else "aba"
     pdf_btn = (f'<p><a class="cta" href="{issue_pdf(iss)}">Download the PDF edition</a></p>'
                if iss.get("pdf_published") else
                '<p class="pending">The PDF edition arrives once the October issue is approved.</p>')
@@ -252,7 +292,7 @@ def landing(slug):
     body = f"""
 <h1>{esc(t['name'])}</h1>
 <p class="strapline">{esc(t['strapline'])}</p>
-<p><a class="cta" href="{utm(SITE + '/subscribe/', camp)}">Subscribe free</a></p>
+<p><a class="cta" href="{SITE}/subscribe/?mag={mag}">Subscribe free</a></p>
 <section aria-labelledby="h-latest">
   <h2 id="h-latest">Latest issue</h2>
   <p><a href="{issue_url(iss)}">{esc(period_name(iss))} · {esc(iss['headline_main'] + ' ' + iss['headline_italic'])}</a></p>
