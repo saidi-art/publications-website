@@ -97,10 +97,18 @@ def campaign_for(slug_or_none):
         return f"{slug_or_none}-{iss['volume']}"
     return "publications-home"
 
+# MailerLite Universal snippet: powers the embedded subscribe form on every page.
+# Plain string on purpose: the JS braces must not sit inside an f-string.
+ML_HEAD = """<script>
+(function(w,d,e,u,f,l,n){w[f]=w[f]||function(){(w[f].q=w[f].q||[]).push(arguments);},l=d.createElement(e),l.async=1,l.src=u,n=d.getElementsByTagName(e)[0],n.parentNode.insertBefore(l,n);})(window,document,'script','https://assets.mailerlite.com/js/universal.js','ml');ml('account','2732749');
+</script>
+"""
+
 def head(title, desc, canonical, og_image=None, og_type="website"):
     ogi = og_image or "/assets/img/aba-hero.jpg"
     ogu = SITE + ogi
-    return f"""<!doctype html>
+    return f"""
+<!doctype html>
 <html lang="en-GB">
 <head>
 <meta charset="utf-8">
@@ -126,6 +134,7 @@ def head(title, desc, canonical, og_image=None, og_type="website"):
 <link rel="icon" type="image/png" href="/assets/logos/kubeai-logo-reverse.png">
 <link rel="apple-touch-icon" href="/assets/logos/kubeai-logo-reverse.png">
 <link rel="stylesheet" href="/assets/css/web.css">
+{ML_HEAD}
 </head>"""
 
 def chrome(body_html, body_class="t-aba", title="", desc="", canonical="", og_image=None, og_type="website", campaign="publications-home", logo="/assets/logos/kubeai-logo-reverse.svg", logo_alt="kubeAI Publications", wrap="prose"):
@@ -183,13 +192,11 @@ def next_period(iss):
     return datetime(y, m, 1).strftime("%B %Y")
 
 # --- subscribe slot (MailerLite embed replaces this block; double opt-in) ---
-SUBSCRIBE_SLOT = """<!-- ===== SUBSCRIBE SLOT =====
-     Replace this whole block with the MailerLite embed (double opt-in) once
-     the account exists. Nothing above or below changes. -->
+SUBSCRIBE_SLOT = """
 <div class="subscribe-slot">
-  <p>Subscription form arriving shortly.</p>
-</div>
-<!-- ===== END SUBSCRIBE SLOT ===== -->"""
+  <!-- MailerLite embedded form: kubeAI Publications subscribe (double opt-in) -->
+  <div class="ml-embedded" data-form="LF22mS"></div>
+</div>"""
 
 PRIVACY_LINE = ('<p class="privacy-line">When you subscribe, we store your email address and the '
  "time you joined, nothing else. We use it only to send you the magazines you asked for. Each "
@@ -422,7 +429,8 @@ def feeds():
                       f'<guid isPermaLink="true">{SITE}{issue_url(iss)}</guid>'
                       f"<pubDate>{d.strftime('%a, %d %b %Y %H:%M:%S +0000')}</pubDate>"
                       f"<description>{esc(iss['headline_main'] + ' ' + iss['headline_italic'])}</description></item>")
-        w(f"feeds/{slug}.xml", f"""<?xml version="1.0" encoding="UTF-8"?>
+        w(f"feeds/{slug}.xml", f"""
+<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0"><channel>
 <title>{esc(t['name'])}</title>
 <link>{SITE}/{slug}/</link>
