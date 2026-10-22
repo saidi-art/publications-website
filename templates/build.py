@@ -107,8 +107,7 @@ ML_HEAD = """<script>
 def head(title, desc, canonical, og_image=None, og_type="website"):
     ogi = og_image or "/assets/img/aba-hero.jpg"
     ogu = SITE + ogi
-    return f"""
-<!doctype html>
+    return f"""<!doctype html>
 <html lang="en-GB">
 <head>
 <meta charset="utf-8">
@@ -429,8 +428,7 @@ def feeds():
                       f'<guid isPermaLink="true">{SITE}{issue_url(iss)}</guid>'
                       f"<pubDate>{d.strftime('%a, %d %b %Y %H:%M:%S +0000')}</pubDate>"
                       f"<description>{esc(iss['headline_main'] + ' ' + iss['headline_italic'])}</description></item>")
-        w(f"feeds/{slug}.xml", f"""
-<?xml version="1.0" encoding="UTF-8"?>
+        w(f"feeds/{slug}.xml", f"""<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0"><channel>
 <title>{esc(t['name'])}</title>
 <link>{SITE}/{slug}/</link>
