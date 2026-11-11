@@ -14,7 +14,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 SITE = "https://publications.kubeai.info"   # proposed address; Yacine confirms the final one
 BRAND = "kubeAI Publications"
-CONTACT_EMAIL = "saidi@kubeai.info"
+CONTACT_EMAIL = "corrections@kubeai.info"
 SERVICES_URL = "https://kubeai.info"
 PLAY_URL = "https://play.kubeai.info/"
 SCROLLRSI_URL = "https://scrollrsi.kubeai.info"
