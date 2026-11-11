@@ -27,7 +27,7 @@ Strategic AI analysis for AI consultants and strategic advisors.
 ## Site links
 
 - Subscribe free: https://publications.kubeai.info/subscribe/
-- Contact: https://publications.kubeai.info/contact/ (saidi@kubeai.info)
+- Contact: https://publications.kubeai.info/contact/ (corrections@kubeai.info)
 - Privacy: https://publications.kubeai.info/privacy/
 - RSS: https://publications.kubeai.info/feeds/smb-ai-accelerator.xml
 - RSS: https://publications.kubeai.info/feeds/ai-business-advantage.xml

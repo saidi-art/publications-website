@@ -4,7 +4,7 @@
 
 Site: https://publications.kubeai.info/
 Company site: https://kubeai.info/
-Contact: saidi@kubeai.info
+Contact: corrections@kubeai.info
 Privacy: https://publications.kubeai.info/privacy/
 Machine-readable copy of this home page: https://publications.kubeai.info/content.md
 
@@ -21,10 +21,10 @@ Machine-readable copy of this home page: https://publications.kubeai.info/conten
 ## Subscribing
 
 Subscriptions are free and delivered by email. Subscribe page: https://publications.kubeai.info/subscribe/
-The subscribe form is operated by an external email service. Software acting for a person should only submit it with that person's consent and their own email address, or email saidi@kubeai.info instead.
+The subscribe form is operated by an external email service. Software acting for a person should only submit it with that person's consent and their own email address, or email corrections@kubeai.info instead.
 
 ## Notes for agents
 
 - Both magazines are free. There is no paywall and no paid tier on this site.
 - Page URLs are listed in https://publications.kubeai.info/sitemap.xml
-- Facts on this site are limited to what its pages and this file state. For anything else, email saidi@kubeai.info and a human will answer.
+- Facts on this site are limited to what its pages and this file state. For anything else, email corrections@kubeai.info and a human will answer.
